@@ -48,23 +48,40 @@ function significant_connections = ...
     if (nargin < 4 || isempty(significance_cutoff))
         significance_cutoff = 0.95;
     end
+    
+    % Get priors from an example subject
+    model_space = load(BMS.DCM.ffx.data);
+    sample_dcm = load( model_space.subj(1).sess.model(1).fname );
+    priors = sample_dcm.DCM.M.pE.(matrix_letter);
+    if strcmp(matrix_letter, 'B') 
+        priors = priors(:,:,matrix_number);
+    end
      
-    % Compute probability of each connection. This is the proportion of
-    % samples greater than zero.
+    % Get 10,000 samples of each connection
     connectivity_matrix = get_connectivity_matrix(matrix_letter, matrix_number, BMS);
     nsamp = get_num_samples(BMS);    
-    p_connectivity = sum (connectivity_matrix > 0, 3) / nsamp;
-    
+
+    % Compute probability of each connection. This is the proportion of
+    % samples greater than the prior.    
+    p_connectivity = zeros(size(connectivity_matrix,1), size(connectivity_matrix,2));
+    for samp = 1:nsamp
+        p_connectivity = p_connectivity + (connectivity_matrix(:,:,samp) > priors );
+    end
+    p_connectivity = p_connectivity / nsamp;
+            
+    % Correct p-value for sign
     mean_bms = mean(connectivity_matrix,3);
-    
-    % Correct for sign
-    p_connectivity(mean_bms < 0) = 1 - p_connectivity(mean_bms < 0);
+    p_connectivity(mean_bms < priors) = 1 - p_connectivity(mean_bms < priors);
 
     % Identify significant connections
     significant_connections = p_connectivity >= significance_cutoff;
     
     % Output some nice facts and figures   
     disp(' ');
+    disp('Priors:');
+    disp( num2str(priors) );
+    disp(' ');    
+    
     disp('BMS Mean values:');    
     disp( num2str(mean_bms) );
     disp(' ');
@@ -75,7 +92,7 @@ function significant_connections = ...
     
     fprintf('Significant connections (p > %2.2f):\n', significance_cutoff);
     disp( num2str(mean_bms .* significant_connections) );
-    disp(' ');   
+    disp(' ');      
     
     %----------------------------------------------------------------------
     function matrix = get_connectivity_matrix(matrix_letter, matrix_number, BMS)
