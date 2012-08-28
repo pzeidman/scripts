@@ -21,7 +21,18 @@ function passed = test_pz_bma_significances
     % Build BMS
     BMS = struct();    
     BMS.DCM.rfx.bma.a = a_matrix;    
-    BMS.DCM.rfx.bma.nsamp = nsamp;    
+    BMS.DCM.rfx.bma.nsamp = nsamp;   
+    BMS.DCM.rfx.data = 'test_pz_bma_significances_model_space.mat';
+    
+    % Create dummy model space file
+    clear model_space;
+    subj.sess.model(1).fname = 'DCM_test_pz_bma_significances.mat';
+    save('test_pz_bma_significances_model_space.mat','subj');
+    
+    % Create dummy DCM file with zero priors
+    clear DCM;
+    DCM.M.pE.A = zeros(3,3);
+    save('DCM_test_pz_bma_significances.mat', 'DCM');
     
     % Run
     significant_connections = ...

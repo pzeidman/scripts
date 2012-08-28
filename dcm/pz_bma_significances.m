@@ -50,8 +50,7 @@ function significant_connections = ...
     end
     
     % Get priors from an example subject
-    model_space = load(BMS.DCM.ffx.data);
-    sample_dcm = load( model_space.subj(1).sess.model(1).fname );
+    sample_dcm = get_sample_dcm(BMS);
     priors = sample_dcm.DCM.M.pE.(matrix_letter);
     if strcmp(matrix_letter, 'B') 
         priors = priors(:,:,matrix_number);
@@ -130,5 +129,16 @@ function significant_connections = ...
         else
             nsamp = BMS.DCM.ffx.bma.nsamp;
         end
+    end
+
+    %----------------------------------------------------------------------
+    function sample_dcm = get_sample_dcm(BMS)
+        % Loads an example DCM from the BMS
+        if isfield(BMS.DCM, 'rfx') == 1
+            model_space = load(BMS.DCM.rfx.data);
+        else
+            model_space = load(BMS.DCM.ffx.data);
+        end
+        sample_dcm = load( model_space.subj(1).sess.model(1).fname );
     end
 end
