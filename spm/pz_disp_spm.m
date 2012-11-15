@@ -19,7 +19,10 @@ function pz_disp_spm(SPM)
     % along with this program.  If not, see <http://www.gnu.org/licenses/>.   
     % ---------------------------------------------------------------------        
          
-    display_trials();
+    if isfield(SPM,'Sess')
+        display_trials();
+    end
+    
     display_contrasts();
     
     % ---------------------------------------------------------------------            
@@ -115,19 +118,22 @@ function pz_disp_spm(SPM)
            if strcmp(SPM.xCon(i).STAT,'T')
                 for j = 1:length(nzcolumns)
                     contrast_entry = SPM.xCon(i).c(nzcolumns(j));
-                    % Choose colour
-                    if contrast_entry > 0
-                        colour = [0 .5 0];
-                    elseif contrast_entry < 0
-                        colour = [0.5 0 0];
-                    else
-                        colour = 'black';
-                    end
+                    
                     % Colour - not compatible with Matlab 2012
+                    %if contrast_entry > 0
+                    %    colour = [0 .5 0];
+                    %elseif contrast_entry < 0
+                    %    colour = [0.5 0 0];
+                    %else
+                    %    colour = 'black';
+                    %end                    
                     % cprintf(colour, '\t %2d %s \n', contrast_entry, SPM.xX.name{nzcolumns(j)});
-                    % BW
+                    
+                    % Black and white
                     fprintf('\t %2d %s \n', contrast_entry, SPM.xX.name{nzcolumns(j)});
                 end
+           elseif strcmp(SPM.xCon(i).STAT,'F')
+               fprintf('\t  %s \n', 'F-contrast not displayed');
            end
 
        end
