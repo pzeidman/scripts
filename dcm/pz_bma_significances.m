@@ -35,7 +35,10 @@ function significant_connections = ...
 
     % Validate input
     assert(~isempty(BMS) && isstruct(BMS), 'BMS must be a structure');
-    assert(~isempty(matrix_letter) && ismember(matrix_letter, ['A','B','C']));    
+    
+    assert(~isempty(matrix_letter));    
+    matrix_letter = upper(matrix_letter);
+    assert(ismember(matrix_letter, ['A','B','C']));    
 
     if (nargin < 3 || isempty(matrix_number))
         if strcmp(matrix_letter, 'B') 
