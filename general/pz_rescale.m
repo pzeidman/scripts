@@ -24,9 +24,9 @@ function new_X = pz_rescale(X, new_min, new_max)
     % along with this program.  If not, see <http://www.gnu.org/licenses/>.   
     % ---------------------------------------------------------------------
     
-    current_min = min(min(X));
-    current_max = max(max(X));
+    current_min = min(X(:));
+    current_max = max(X(:));
     
     scale_factor = (current_max - current_min) / (new_max - new_min);
-    new_X = new_min + (X - current_min) / scale_factor;
+    new_X = new_min + (X - current_min) / scale_factor;    
 end
